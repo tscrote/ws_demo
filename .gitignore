@@ -2,3 +2,4 @@
 /.idea/node-ws.iml
 /.idea/vcs.xml
 /.idea/.gitignore
+/node_modules
