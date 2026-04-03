@@ -1,20 +1,32 @@
-import { WebSocketServer } from 'ws';
+import  express  from 'express';
+import { createServer } from 'http';
+import WebSocket, {WebSocketServer}from 'ws';
+//const express = require('express')
+//const { createServer } = require('http')
+//const WebSocket = require('ws')
 
-const server = new WebSocketServer({ 
-  port: 8081 
-});
+const app = express()
+const server = createServer(app)
+const port = process.env.PORT || 10000
 
-server.on('connection', (socket) => {
-    console.log('Client connected');
+// Serves WebSocket connections at /ws (any path is fine)
+const wss = new WebSocketServer({ server})
 
-    socket.on('message', (message) => {
-        console.log(`Received: ${message}`);
-        socket.send(`Server: ${message}`);
-    });
+// HTTP routes
+app.get('/', (req, res) => {
+    res.send('Hello over HTTP!')
+})
 
-    socket.on('close', () => {
-        console.log('Client disconnected');
-    });
-});
+// WebSocket connections
+wss.on('connection', (ws) => {
+    console.log('WebSocket client connected')
 
-console.log('WebSocket server is running on ws://localhost:8081');
+    ws.on('message', (message) => {
+        console.log('Received:', message.toString())
+        ws.send(`Hello over WebSocket!`)
+    })
+})
+
+server.listen(port, () => {
+    console.log(`Server listening on port ${port}`)
+})
